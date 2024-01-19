@@ -8,6 +8,7 @@ let gameState = ref(false);
 let endMessage = ref('');
 let wordValue = ref('');
 const typing = ref('');
+const step = ref(1);
 const newWord = () => {
   return wordValue.value = wordLump.item[Math.floor(Math.random() * 188687)]
 }
@@ -70,15 +71,18 @@ watch([moveRange, npcRange], () => {
 
 
     <!-- if game is over show dialog    -->
-    <q-dialog v-model="gameState" class="end-container">
-      <q-card>
+    <q-dialog v-model="gameState" >
+      <q-card class="end-container">
         <q-card-section>
           <div class="text-h6">GAME OVER</div>
         </q-card-section>
 
         <q-card-section class="q-pt-none">
-          {{ endMessage }}
+          <p class="text-h5">{{ endMessage }}</p>
         </q-card-section>
+<!--        <q-card-section v-if="endMessage === '그대의 승리'">
+          다음 단계 도전?
+        </q-card-section>-->
       </q-card>
     </q-dialog>
   </q-page>
@@ -106,7 +110,7 @@ watch([moveRange, npcRange], () => {
   justify-content: start
 
 .end-container
-  width: 50%
+  width: 15vw
 
 .red
   background-color: red
