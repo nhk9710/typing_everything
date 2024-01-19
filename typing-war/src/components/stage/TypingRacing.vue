@@ -99,7 +99,7 @@ newWord();
 setTimeout(startCountdown, 1000);
 //게임 승패 여부 관련 감시 코드
 watch([moveRange, npcRange], () => {
-  if(moveRange.value >= 20){
+  if(moveRange.value >= 920){
     gameState.value = true;
     endMessage.value = '그대의 승리'
     clearInterval(moveNpc);
