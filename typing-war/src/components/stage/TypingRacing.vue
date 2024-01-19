@@ -62,6 +62,7 @@ const resumeGame = () => {
 
 //재도전,응애모드 실행 관련 함수
 const retry = (state) => {
+  count.value = 3;
   if(state === 'baby' && !babyMode.value){
     moveSpeed.value += 2.5;
     babyMode.value = true;
@@ -77,12 +78,6 @@ const retry = (state) => {
   endMessage.value = '';
   newWord();
   typing.value = '';
-  moveNpc =
-    setInterval(() => {
-      npcRange.value += npcSpeed.value;
-      npcRange.value = Math.round(npcRange.value * 10)/10
-      gsap.to(".red", {x : npcRange.value, duration:1});
-    },1000);
   setTimeout(startCountdown, 1000);
 }
 
@@ -104,7 +99,7 @@ newWord();
 setTimeout(startCountdown, 1000);
 //게임 승패 여부 관련 감시 코드
 watch([moveRange, npcRange], () => {
-  if(moveRange.value >= 920){
+  if(moveRange.value >= 20){
     gameState.value = true;
     endMessage.value = '그대의 승리'
     clearInterval(moveNpc);
