@@ -50,7 +50,7 @@ function selectCharacter(val) {
     <div class="submit-btn">
     <!--  submit    -->
     <!--  go normalstage.vue    -->
-      <q-btn color="primary" label="시작" @click="$router.push('/normal')" />
+      <q-btn color="primary" label="시작" @click="$router.push('/racing')" />
     </div>
   </q-page>
 </template>
