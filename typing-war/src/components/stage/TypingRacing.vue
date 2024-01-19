@@ -19,7 +19,7 @@ let moveRange = ref(0)
 let npcRange = ref(0)
 
 const moveBox = () => {
-  moveRange.value += 10;
+  moveRange.value += wordValue.value.length * 5.5;
   gsap.to(".green", {x : moveRange.value, duration:1});
 }
 
