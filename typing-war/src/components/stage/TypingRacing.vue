@@ -84,6 +84,9 @@ watch([moveRange, npcRange], () => {
 
 <template>
   <q-page class="racing-container flex flex-center column">
+    <div>
+      <span class="text-h5 text-white text-bold">STAGE : {{ step }}</span>
+    </div>
     <div class="box-container">
       <div class="box red"></div>
       <div class="box green"></div>
