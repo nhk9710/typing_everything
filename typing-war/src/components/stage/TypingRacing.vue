@@ -1,34 +1,26 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import {ref, onMounted, onUnmounted, watch} from 'vue';
 import wordLump from '../../word_data/words.json'
 import gsap from 'gsap'
-import worditem from "src/word_data/words.json";
 
 //word config
+let gameState = ref(false);
+let endMessage = ref('');
 let wordValue = ref('');
 const typing = ref('');
 const newWord = () => {
-  return wordValue.value = worditem.item[Math.floor(Math.random() * 188687)]
+  return wordValue.value = wordLump.item[Math.floor(Math.random() * 188687)]
 }
 
-
-//npc player
+// variable
+let moveRange = ref(0);
+let npcRange = ref(0);
 
 //user
-let moveRange = ref(0)
-let npcRange = ref(0)
-
 const moveBox = () => {
   moveRange.value += wordValue.value.length * 5.5;
   gsap.to(".green", {x : moveRange.value, duration:1});
-}
-
-const moveNpc = () => {
-  setInterval(() => {
-    npcRange.value += 10;
-    gsap.to(".red", {x : npcRange.value, duration:1});
-  },1000)
-}
+};
 
 const check_word = () => {
   if(wordValue.value === typing.value){
@@ -36,22 +28,59 @@ const check_word = () => {
     moveBox();
     typing.value = '';
   }
-}
+};
+
+//npc player
+const moveNpc =
+  setInterval(() => {
+    npcRange.value += 10;
+    gsap.to(".red", {x : npcRange.value, duration:1});
+  },1000)
+
+
 newWord();
-moveNpc();
+watch([moveRange, npcRange], () => {
+  if(moveRange.value >= 920){
+    gameState.value = true;
+    endMessage.value = '그대의 승리'
+    clearInterval(moveNpc);
+  }
+  if(npcRange.value >= 920){
+    gameState.value = true;
+    endMessage.value = '그대의 패배!!!'
+    clearInterval(moveNpc);
+  }
+})
+// moveNpc;
 </script>
 
 
 <template>
   <q-page class="racing-container flex flex-center column">
-    <div class="box red"></div>
-    <div class="box green"></div>
+    <div class="box-container">
+      <div class="box red"></div>
+      <div class="box green"></div>
+    </div>
     <div>
       <p class="text-bold text-h5 text-white">{{ wordValue }}</p>
     </div>
     <div>
       <q-input label="단어" v-model="typing" filled bg-color="white" @keyup.enter="check_word"/>
     </div>
+
+
+    <!-- if game is over show dialog    -->
+    <q-dialog v-model="gameState" class="end-container">
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">GAME OVER</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          {{ endMessage }}
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -68,6 +97,16 @@ moveNpc();
   height: 2vw
   border-radius: 5px
   margin-bottom: 2%
+
+.box-container
+  width: 50%
+  border: 1px solid white
+  display: flex
+  flex-direction: column
+  justify-content: start
+
+.end-container
+  width: 50%
 
 .red
   background-color: red
