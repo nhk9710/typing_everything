@@ -5,6 +5,7 @@ import gsap from 'gsap'
 
 //word config
 let gameState = ref(false);
+let gamePause = ref(false);
 let endMessage = ref('');
 let wordValue = ref('');
 const typing = ref('');
@@ -40,6 +41,20 @@ let moveNpc =
     npcRange.value += npcSpeed.value;
     gsap.to(".red", {x : npcRange.value, duration:1});
   },1000)
+
+const pauseGame = () => {
+  clearInterval(moveNpc);
+  gamePause.value = true;
+}
+
+const resumeGame = () => {
+  moveNpc = setInterval(() => {
+    npcRange.value += npcSpeed.value;
+    gsap.to(".red", {x : npcRange.value, duration:1});
+  },1000);
+  gamePause.value = false;
+  typing.value = '';
+}
 
 const retry = (state) => {
   if(state === 'baby' && !babyMode.value){
@@ -95,7 +110,7 @@ watch([moveRange, npcRange], () => {
       <p class="text-bold text-h5 text-white disable-dblclick" >{{ wordValue }}</p>
     </div>
     <div>
-      <q-input label="단어" v-model="typing" filled bg-color="white" @keyup.enter="check_word"/>
+      <q-input label="단어" v-model="typing" filled bg-color="white" @keyup.enter="check_word" @keyup.space="pauseGame"/>
       <span class="text-pink-5 text-bold" v-if="babyMode">응애모드 ON!</span>
     </div>
 
@@ -111,14 +126,30 @@ watch([moveRange, npcRange], () => {
           <p class="text-h5">{{ endMessage }}</p>
         </q-card-section>
         <q-card-actions align="right" v-if="endMessage === '그대의 승리'">
-          <q-btn label="다음 단계" class="bg-green-3" @click="retry('next')" />
+          <q-btn label="다음 단계" class="bg-green-3 text-bold text-white" @click="retry('next')" />
         </q-card-actions>
         <q-card-actions align="right" v-if="endMessage === '그대의 패배!!!'">
-          <q-btn label="응애모드" v-if="!babyMode" class="bg-pink-5" @click="retry('baby')"/>
-          <q-btn label="재도전" class="bg-red-5" @click="retry('again')"/>
+          <q-btn label="응애모드" v-if="!babyMode" class="bg-pink-5 text-bold text-white" @click="retry('baby')"/>
+          <q-btn label="재도전" class="bg-red-5 text-bold text-white" @click="retry('again')"/>
         </q-card-actions>
       </q-card>
     </q-dialog>
+
+    <q-dialog v-model="gamePause" >
+      <q-card class="end-container">
+        <q-card-section>
+          <div class="text-h6">GAME PAUSE</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          <p class="text-h5">일시정지</p>
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn label="게임 재개" class="bg-blue-9 text-bold text-white" @click="resumeGame()" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
   </q-page>
 </template>
 
@@ -137,7 +168,6 @@ watch([moveRange, npcRange], () => {
   width: 2vw
   height: 2vw
   border-radius: 5px
-  margin-bottom: 2%
 
 .box-container
   width: 50%
@@ -145,12 +175,14 @@ watch([moveRange, npcRange], () => {
   display: flex
   flex-direction: column
   justify-content: start
+  border-radius: 5px
 
 .end-container
   width: 15vw
 
 .red
   background-color: red
+  margin-bottom: 2%
 .green
   background-color: green
 </style>
