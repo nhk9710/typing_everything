@@ -91,8 +91,8 @@ watch([moveRange, npcRange], () => {
       <div class="box red"></div>
       <div class="box green"></div>
     </div>
-    <div>
-      <p class="text-bold text-h5 text-white">{{ wordValue }}</p>
+    <div draggable="false" class="disable-dblclick">
+      <p class="text-bold text-h5 text-white disable-dblclick" >{{ wordValue }}</p>
     </div>
     <div>
       <q-input label="단어" v-model="typing" filled bg-color="white" @keyup.enter="check_word"/>
@@ -129,6 +129,9 @@ watch([moveRange, npcRange], () => {
   height: 100vh
   background-color: #1f2040
 
+.disable-dblclick
+  pointer-events: none
+  user-select: none
 
 .box
   width: 2vw
