@@ -9,6 +9,9 @@ let endMessage = ref('');
 let wordValue = ref('');
 const typing = ref('');
 const step = ref(1);
+const moveSpeed = ref(5.5);
+const npcSpeed = ref(10);
+const babyMode = ref(false);
 const newWord = () => {
   return wordValue.value = wordLump.item[Math.floor(Math.random() * 188687)]
 }
@@ -19,7 +22,7 @@ let npcRange = ref(0);
 
 //user
 const moveBox = () => {
-  moveRange.value += wordValue.value.length * 5.5;
+  moveRange.value += wordValue.value.length * moveSpeed.value;
   gsap.to(".green", {x : moveRange.value, duration:1});
 };
 
@@ -32,16 +35,40 @@ const check_word = () => {
 };
 
 //npc player
-const moveNpc =
+let moveNpc =
   setInterval(() => {
-    npcRange.value += 10;
+    npcRange.value += npcSpeed.value;
     gsap.to(".red", {x : npcRange.value, duration:1});
   },1000)
 
+const retry = (state) => {
+  if(state === 'baby' && !babyMode.value){
+    moveSpeed.value += 2.5;
+    babyMode.value = true;
+  }else if(state === 'next'){
+    step.value += 1;
+    npcSpeed.value += 0.2;
+  }
+  moveRange.value = 0;
+  npcRange.value = 0;
+  gsap.to(".green", {x : moveRange.value, duration:1});
+  gsap.to(".red", {x : npcRange.value, duration:1});
+  gameState.value = false;
+  endMessage.value = '';
+  newWord();
+  typing.value = '';
+  moveNpc =
+    setInterval(() => {
+      npcRange.value += npcSpeed.value;
+      npcRange.value = Math.round(npcRange.value * 10)/10
+      gsap.to(".red", {x : npcRange.value, duration:1});
+    },1000)
+  console.log(npcSpeed.value);
+}
 
 newWord();
 watch([moveRange, npcRange], () => {
-  if(moveRange.value >= 920){
+  if(moveRange.value >= 20){
     gameState.value = true;
     endMessage.value = '그대의 승리'
     clearInterval(moveNpc);
@@ -52,7 +79,6 @@ watch([moveRange, npcRange], () => {
     clearInterval(moveNpc);
   }
 })
-// moveNpc;
 </script>
 
 
@@ -67,6 +93,7 @@ watch([moveRange, npcRange], () => {
     </div>
     <div>
       <q-input label="단어" v-model="typing" filled bg-color="white" @keyup.enter="check_word"/>
+      <span class="text-pink-5 text-bold" v-if="babyMode">응애모드 ON!</span>
     </div>
 
 
@@ -80,9 +107,13 @@ watch([moveRange, npcRange], () => {
         <q-card-section class="q-pt-none">
           <p class="text-h5">{{ endMessage }}</p>
         </q-card-section>
-<!--        <q-card-section v-if="endMessage === '그대의 승리'">
-          다음 단계 도전?
-        </q-card-section>-->
+        <q-card-actions align="right" v-if="endMessage === '그대의 승리'">
+          <q-btn label="다음 단계" class="bg-green-3" @click="retry('next')" />
+        </q-card-actions>
+        <q-card-actions align="right" v-if="endMessage === '그대의 패배!!!'">
+          <q-btn label="응애모드" v-if="!babyMode" class="bg-pink-5" @click="retry('baby')"/>
+          <q-btn label="재도전" class="bg-red-5" @click="retry('again')"/>
+        </q-card-actions>
       </q-card>
     </q-dialog>
   </q-page>
