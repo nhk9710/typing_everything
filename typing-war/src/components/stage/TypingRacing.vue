@@ -68,7 +68,7 @@ const retry = (state) => {
 
 newWord();
 watch([moveRange, npcRange], () => {
-  if(moveRange.value >= 20){
+  if(moveRange.value >= 920){
     gameState.value = true;
     endMessage.value = '그대의 승리'
     clearInterval(moveNpc);
