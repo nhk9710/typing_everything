@@ -1,5 +1,5 @@
 <script setup>
-import {ref, onMounted, onUnmounted, watch} from 'vue';
+import {ref,watch} from 'vue';
 import wordLump from '../../word_data/words.json'
 import gsap from 'gsap'
 
