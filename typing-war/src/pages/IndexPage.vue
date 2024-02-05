@@ -47,11 +47,12 @@ function selectCharacter(val) {
       </q-input>
     </div>
 
-    <div class="submit-btn">
+    <div class="submit-btn q-mb-lg">
     <!--  submit    -->
     <!--  go normalstage.vue    -->
       <q-btn color="primary" label="시작" @click="$router.push('/racing')" />
     </div>
+    <a href="https://www.flaticon.com/kr/free-icons/-" title="컴퓨터 키보드 아이콘">컴퓨터 키보드 아이콘  제작자: berkahicon - Flaticon</a>
   </q-page>
 </template>
 

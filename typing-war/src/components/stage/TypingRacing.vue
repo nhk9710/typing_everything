@@ -1,7 +1,7 @@
 <script setup>
 import {ref,watch} from 'vue';
 import wordLump from '../../word_data/words.json'
-import gsap from 'gsap'
+import { usePlayerStore } from "stores/player";
 
 //word config, 전역 변수 모음 ========================
 let gameState = ref(false); //게임 패배 또는 승리 시 활성화 변수
@@ -11,9 +11,10 @@ let wordValue = ref(''); //입력해야 할 단어 변수
 const typing = ref(''); // 플레이어 입력 변수
 const step = ref(1); // 스테이지 단계 변수
 const moveSpeed = ref(5.5); // 플레이어 움직임 속도 변수
-const npcSpeed = ref(10); // NPC 움직임 속도 변수
+const npcSpeed = ref(0.005); // NPC 움직임 속도 변수
 const babyMode = ref(false); // 응애모드 활성화 변수
 let count = ref(3); //게임 시작 전 카운트 다운 변수
+const userName = usePlayerStore().name;
 
 let npcValue = ref(0);
 let userValue = ref(0);
@@ -59,7 +60,7 @@ const retry = (state) => {
     babyMode.value = true;
   }else if(state === 'next'){
     step.value += 1;
-    npcSpeed.value += 0.2;
+    npcSpeed.value += 0.001;
   }
   gameState.value = false;
   endMessage.value = '';
@@ -87,12 +88,12 @@ setTimeout(startCountdown, 500);
 watch([userValue, npcValue], () => {
   if(parseFloat(npcValue.value.toFixed(4)) === 1 && parseFloat(userValue.value.toFixed(4)) !== 1){
     gameState.value = true;
-    endMessage.value = '그대의 패배!!'
+    endMessage.value = userName.value + '의 패배!!'
     clearInterval(moveNpc);
   }
   if(parseFloat(userValue.value.toFixed(4)) === 1 && parseFloat(npcValue.value.toFixed(4)) !== 1){
     gameState.value = true;
-    endMessage.value = '그대의 승리!!!'
+    endMessage.value = userName.value + '의 승리!!!'
     clearInterval(moveNpc);
   }
 })
@@ -103,8 +104,8 @@ watch([userValue, npcValue], () => {
   <div>
     <div class="chk-contain"></div>
   <q-page class="racing-container flex flex-center column">
-    <div>
-      <span class="text-h5 text-white text-bold">STAGE : {{ step }}</span>
+    <div class="q-mb-lg">
+      <span class="text-h4 text-white text-bold">STAGE : {{ step }}</span>
     </div>
     <div v-if="count > 0">
       <span class="text-h5 text-white text-bold">시작 {{ count }} 초 전...</span>
@@ -113,18 +114,29 @@ watch([userValue, npcValue], () => {
       <q-linear-progress class="q-mb-sm" stripe color="negative" rounded size="20px" :value="npcValue"></q-linear-progress>
       <q-linear-progress color="positive" rounded size="20px" :value="userValue"></q-linear-progress>
     </div>
-    <div draggable="false" class="disable-dblclick">
+    <div draggable="false" class="disable-dblclick q-mt-lg">
       <p class="text-bold text-h5 text-white disable-dblclick">{{ wordValue }}</p>
     </div>
     <div>
+      <template v-if="count === 3">
+        <span class="text-h4 text-white text-bold">Ready...</span>
+      </template>
+      <template v-if="count ===  2">
+        <span class="text-h4 text-white text-bold">Set....</span>
+      </template>
+      <template v-if="count === 1">
+        <span class="text-h4 text-white text-bold">Go!!!</span>
+      </template>
+      <template v-if="count === 0">
       <q-input
         label="단어"
         v-model="typing"
         filled
         bg-color="white"
-        :disable="count > 0"
+        autofocus
         @keyup.enter="check_word"
         @keyup.space="pauseGame"/>
+      </template>
       <span class="text-pink-5 text-bold" v-if="babyMode">응애모드 ON!</span>
     </div>
 
@@ -139,10 +151,10 @@ watch([userValue, npcValue], () => {
         <q-card-section class="q-pt-none">
           <p class="text-h5">{{ endMessage }}</p>
         </q-card-section>
-        <q-card-actions align="right" v-if="endMessage === '그대의 승리!!!'">
+        <q-card-actions align="right" v-if="endMessage === userName + '의 승리!!!'">
           <q-btn label="다음 단계" class="bg-green-3 text-bold text-white" @click="retry('next')" />
         </q-card-actions>
-        <q-card-actions align="right" v-if="endMessage === '그대의 패배!!'">
+        <q-card-actions align="right" v-if="endMessage === userName + '의 패배!!'">
           <q-btn label="응애모드" v-if="!babyMode" class="bg-pink-5 text-bold text-white" @click="retry('baby')"/>
           <q-btn label="재도전" class="bg-red-5 text-bold text-white" @click="retry('again')"/>
         </q-card-actions>
