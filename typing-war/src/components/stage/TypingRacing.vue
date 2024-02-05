@@ -16,6 +16,8 @@ const babyMode = ref(false); // 응애모드 활성화 변수
 let count = ref(3); //게임 시작 전 카운트 다운 변수
 const userName = usePlayerStore().name;
 
+let gameVal = ref('');
+
 let npcValue = ref(0);
 let userValue = ref(0);
 //변수 모음 끝 ================================
@@ -88,11 +90,13 @@ setTimeout(startCountdown, 500);
 watch([userValue, npcValue], () => {
   if(parseFloat(npcValue.value.toFixed(4)) === 1 && parseFloat(userValue.value.toFixed(4)) !== 1){
     gameState.value = true;
+    gameVal.value = 'Lose';
     endMessage.value = userName.value + '의 패배!!'
     clearInterval(moveNpc);
   }
   if(parseFloat(userValue.value.toFixed(4)) === 1 && parseFloat(npcValue.value.toFixed(4)) !== 1){
     gameState.value = true;
+    gameVal.value = 'Win';
     endMessage.value = userName.value + '의 승리!!!'
     clearInterval(moveNpc);
   }
@@ -111,8 +115,8 @@ watch([userValue, npcValue], () => {
       <span class="text-h5 text-white text-bold">시작 {{ count }} 초 전...</span>
     </div>
     <div class="box-container">
-      <q-linear-progress class="q-mb-sm" stripe color="negative" rounded size="20px" :value="npcValue"></q-linear-progress>
-      <q-linear-progress color="positive" rounded size="20px" :value="userValue"></q-linear-progress>
+      <q-linear-progress class="q-mb-sm" stripe track-color="grey-2" color="negative" rounded size="20px" :value="npcValue"></q-linear-progress>
+      <q-linear-progress track-color="grey-2" color="positive" rounded size="20px" :value="userValue"></q-linear-progress>
     </div>
     <div draggable="false" class="disable-dblclick q-mt-lg">
       <p class="text-bold text-h5 text-white disable-dblclick">{{ wordValue }}</p>
@@ -151,10 +155,10 @@ watch([userValue, npcValue], () => {
         <q-card-section class="q-pt-none">
           <p class="text-h5">{{ endMessage }}</p>
         </q-card-section>
-        <q-card-actions align="right" v-if="endMessage === userName + '의 승리!!!'">
+        <q-card-actions align="right" v-if="endMessage === 'Win'">
           <q-btn label="다음 단계" class="bg-green-3 text-bold text-white" @click="retry('next')" />
         </q-card-actions>
-        <q-card-actions align="right" v-if="endMessage === userName + '의 패배!!'">
+        <q-card-actions align="right" v-if="endMessage === 'Lose'">
           <q-btn label="응애모드" v-if="!babyMode" class="bg-pink-5 text-bold text-white" @click="retry('baby')"/>
           <q-btn label="재도전" class="bg-red-5 text-bold text-white" @click="retry('again')"/>
         </q-card-actions>
