@@ -10,7 +10,7 @@ let endMessage = ref(''); // 현 스테이지 종료시 메시지 변수
 let wordValue = ref(''); //입력해야 할 단어 변수
 const typing = ref(''); // 플레이어 입력 변수
 const step = ref(1); // 스테이지 단계 변수
-const moveSpeed = ref(5.5); // 플레이어 움직임 속도 변수
+const moveSpeed = ref(0.005); // 플레이어 움직임 속도 변수
 const npcSpeed = ref(0.005); // NPC 움직임 속도 변수
 const babyMode = ref(false); // 응애모드 활성화 변수
 let count = ref(3); //게임 시작 전 카운트 다운 변수
@@ -32,7 +32,7 @@ console.log(usePlayerStore())
 //정답 입력시 체크 하는 코드
 const check_word = () => {
   if(wordValue.value === typing.value){
-    userValue.value += wordValue.value.length * 0.01
+    userValue.value += wordValue.value.length * moveSpeed.value
     newWord();
     typing.value = '';
   }
@@ -58,13 +58,15 @@ const resumeGame = () => {
 const retry = (state) => {
   count.value = 3;
   if(state === 'baby' && !babyMode.value){
-    moveSpeed.value += 2.5;
+    moveSpeed.value += 0.005;
     babyMode.value = true;
   }else if(state === 'next'){
     step.value += 1;
     npcSpeed.value += 0.001;
   }
   gameState.value = false;
+  npcValue.value = 0;
+  userValue.value = 0;
   endMessage.value = '';
   newWord();
   typing.value = '';
