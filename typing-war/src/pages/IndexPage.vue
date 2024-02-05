@@ -1,7 +1,11 @@
 <script setup>
 import { ref } from 'vue'
 import { usePlayerStore } from "stores/player";
-import { storeToRefs } from 'pinia';
+import { useRouter, useRoute } from 'vue-router'
+
+//router관련 변수
+const router = useRouter();
+const route = useRoute();
 
 const count = ref(0);
 
@@ -9,6 +13,16 @@ const player = usePlayerStore();
 
 function selectCharacter(val) {
   player.character = val;
+}
+
+const goHere = () => {
+  if(player.character === 'blue'){
+    router.push({ path:'/racing'});
+  }else if(player.character === 'green'){
+    router.push({ path:'/story' });
+  }else{
+    alert('장문과 단문 중 하나를 선택해 주세요.')
+  }
 }
 
 </script>
@@ -50,7 +64,7 @@ function selectCharacter(val) {
     <div class="submit-btn q-mb-lg">
     <!--  submit    -->
     <!--  go normalstage.vue    -->
-      <q-btn color="primary" label="시작" @click="$router.push('/racing')" />
+      <q-btn color="primary" label="시작" @click="goHere" />
     </div>
     <a href="https://www.flaticon.com/kr/free-icons/-" title="컴퓨터 키보드 아이콘">컴퓨터 키보드 아이콘  제작자: berkahicon - Flaticon</a>
   </q-page>
