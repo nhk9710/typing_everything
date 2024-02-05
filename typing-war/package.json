@@ -2,7 +2,7 @@
   "name": "typing-war",
   "version": "0.0.1",
   "description": "Let's typing",
-  "productName": "Quasar App",
+  "productName": "TaDak",
   "author": "nhk9710 <hknoh@wkit.co.kr>",
   "private": true,
   "scripts": {

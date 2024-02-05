@@ -16,26 +16,26 @@ function selectCharacter(val) {
 <template>
   <q-page class="flex flex-center column">
     <div class="character-card">
-    <q-card class="character bg-red-2" @click="selectCharacter('red')">
+<!--    <q-card class="character bg-red-2" @click="selectCharacter('red')">
       <q-card-section>
         RED
       </q-card-section>
-    </q-card>
-    <q-card class="character bg-green-2" @click="selectCharacter('green')">
-      <q-card-section>
-        GREEN
+    </q-card>-->
+    <q-card class="character bg-green-2 flex q-mr-sm justify-center column" @click="selectCharacter('green')">
+      <q-card-section class="flex justify-center long">
+        <span class=" text-h4 text-bold">장문</span>
       </q-card-section>
     </q-card>
-    <q-card class="character bg-blue-2" @click="selectCharacter('blue')">
-      <q-card-section>
-        BLUE
+    <q-card class="character bg-blue-2 flex justify-center column" @click="selectCharacter('blue')">
+      <q-card-section class="flex justify-center">
+        <span class="short text-h4 text-bold">단어</span>
       </q-card-section>
     </q-card>
-    <q-card class="character bg-yellow-2" @click="selectCharacter('yellow')">
+<!--    <q-card class="character bg-yellow-2" @click="selectCharacter('yellow')">
       <q-card-section>
         YELLOW
       </q-card-section>
-    </q-card>
+    </q-card>-->
     </div>
 
     <div class="name-box">
@@ -64,9 +64,24 @@ function selectCharacter(val) {
 .character:hover
   cursor: pointer
 
+
+.long
+  color: #00695C
+  transition: 0.5s
+
+.long:hover
+  color: #de7009
+
+.short
+  color: #1565C4
+  transition: 0.5s
+
+.short:hover
+  color: #a805fa
+
 .character-card
   display: flex
-  justify-content: space-between
+  justify-content: center
   width: 50%
 
 .name-box

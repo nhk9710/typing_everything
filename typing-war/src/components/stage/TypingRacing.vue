@@ -14,28 +14,23 @@ const moveSpeed = ref(5.5); // 플레이어 움직임 속도 변수
 const npcSpeed = ref(10); // NPC 움직임 속도 변수
 const babyMode = ref(false); // 응애모드 활성화 변수
 let count = ref(3); //게임 시작 전 카운트 다운 변수
+
+let npcValue = ref(0);
+let userValue = ref(0);
 //변수 모음 끝 ================================
 
 //새로운 단어 선언 함수
 const newWord = () => {
-  return wordValue.value = wordLump.item[Math.floor(Math.random() * 188687)]
+  return wordValue.value = wordLump.item[Math.floor(Math.random() * 188658)]
 }
 
-// variable, 플레이어 및 NPC 도달 좌표 변수
-let moveRange = ref(0);
-let npcRange = ref(0);
-
-//user, 플레이어 움직임 함수
-const moveBox = () => {
-  moveRange.value += wordValue.value.length * moveSpeed.value;
-  gsap.to(".green", {x : moveRange.value, duration:1});
-};
+//user, 플레이어 프로그레스 바 변화 함수
 
 //정답 입력시 체크 하는 코드
 const check_word = () => {
   if(wordValue.value === typing.value){
+    userValue.value += wordValue.value.length * 0.01
     newWord();
-    moveBox();
     typing.value = '';
   }
 };
@@ -52,10 +47,6 @@ const pauseGame = () => {
 
 //게임 재실행 함수
 const resumeGame = () => {
-  moveNpc = setInterval(() => {
-    npcRange.value += npcSpeed.value;
-    gsap.to(".red", {x : npcRange.value, duration:1});
-  },1000);
   gamePause.value = false;
   typing.value = '';
 }
@@ -70,10 +61,6 @@ const retry = (state) => {
     step.value += 1;
     npcSpeed.value += 0.2;
   }
-  moveRange.value = 0;
-  npcRange.value = 0;
-  gsap.to(".green", {x : moveRange.value, duration:1});
-  gsap.to(".red", {x : npcRange.value, duration:1});
   gameState.value = false;
   endMessage.value = '';
   newWord();
@@ -87,26 +74,25 @@ const startCountdown = () => {
     if(count.value === 0){
       clearInterval(timer);
       moveNpc = setInterval(() => {
-        npcRange.value += npcSpeed.value;
-        gsap.to(".red", {x : npcRange.value, duration:1});
-      },1000)
+        npcValue.value += 0.005
+      },500)
     }
   },1000);
 }
 
 //새로운 단어 선언 함수 실행
 newWord();
-setTimeout(startCountdown, 1000);
+setTimeout(startCountdown, 500);
 //게임 승패 여부 관련 감시 코드
-watch([moveRange, npcRange], () => {
-  if(moveRange.value >= 920){
+watch([userValue, npcValue], () => {
+  if(parseFloat(npcValue.value.toFixed(4)) === 1 && parseFloat(userValue.value.toFixed(4)) !== 1){
     gameState.value = true;
-    endMessage.value = '그대의 승리'
+    endMessage.value = '그대의 패배!!'
     clearInterval(moveNpc);
   }
-  if(npcRange.value >= 920){
+  if(parseFloat(userValue.value.toFixed(4)) === 1 && parseFloat(npcValue.value.toFixed(4)) !== 1){
     gameState.value = true;
-    endMessage.value = '그대의 패배!!!'
+    endMessage.value = '그대의 승리!!!'
     clearInterval(moveNpc);
   }
 })
@@ -114,6 +100,8 @@ watch([moveRange, npcRange], () => {
 
 
 <template>
+  <div>
+    <div class="chk-contain"></div>
   <q-page class="racing-container flex flex-center column">
     <div>
       <span class="text-h5 text-white text-bold">STAGE : {{ step }}</span>
@@ -122,8 +110,8 @@ watch([moveRange, npcRange], () => {
       <span class="text-h5 text-white text-bold">시작 {{ count }} 초 전...</span>
     </div>
     <div class="box-container">
-      <div class="box red"></div>
-      <div class="box green"></div>
+      <q-linear-progress class="q-mb-sm" stripe color="negative" rounded size="20px" :value="npcValue"></q-linear-progress>
+      <q-linear-progress color="positive" rounded size="20px" :value="userValue"></q-linear-progress>
     </div>
     <div draggable="false" class="disable-dblclick">
       <p class="text-bold text-h5 text-white disable-dblclick">{{ wordValue }}</p>
@@ -151,10 +139,10 @@ watch([moveRange, npcRange], () => {
         <q-card-section class="q-pt-none">
           <p class="text-h5">{{ endMessage }}</p>
         </q-card-section>
-        <q-card-actions align="right" v-if="endMessage === '그대의 승리'">
+        <q-card-actions align="right" v-if="endMessage === '그대의 승리!!!'">
           <q-btn label="다음 단계" class="bg-green-3 text-bold text-white" @click="retry('next')" />
         </q-card-actions>
-        <q-card-actions align="right" v-if="endMessage === '그대의 패배!!!'">
+        <q-card-actions align="right" v-if="endMessage === '그대의 패배!!'">
           <q-btn label="응애모드" v-if="!babyMode" class="bg-pink-5 text-bold text-white" @click="retry('baby')"/>
           <q-btn label="재도전" class="bg-red-5 text-bold text-white" @click="retry('again')"/>
         </q-card-actions>
@@ -178,6 +166,7 @@ watch([moveRange, npcRange], () => {
     </q-dialog>
 
   </q-page>
+  </div>
 </template>
 
 
@@ -198,7 +187,6 @@ watch([moveRange, npcRange], () => {
 
 .box-container
   width: 50%
-  border: 1px solid white
   display: flex
   flex-direction: column
   justify-content: start
@@ -206,6 +194,9 @@ watch([moveRange, npcRange], () => {
 
 .end-container
   width: 15vw
+
+.chk-contain
+  border: 1px solid red
 
 .red
   background-color: red
