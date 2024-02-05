@@ -26,15 +26,20 @@ let userValue = ref(0);
 const newWord = () => {
   return wordValue.value = wordLump.item[Math.floor(Math.random() * 188658)]
 }
-console.log(usePlayerStore())
 //user, 플레이어 프로그레스 바 변화 함수
 
 //정답 입력시 체크 하는 코드
 const check_word = () => {
+  let ele = document.getElementById('wordVal')
   if(wordValue.value === typing.value){
     userValue.value += wordValue.value.length * moveSpeed.value
     newWord();
+    ele.classList.remove('turn-red');
+    ele.classList.add('turn-white');
     typing.value = '';
+  }else{
+    ele.classList.remove('turn-white');
+    ele.classList.add('turn-red');
   }
 };
 
@@ -50,6 +55,9 @@ const pauseGame = () => {
 
 //게임 재실행 함수
 const resumeGame = () => {
+  moveNpc = setInterval(() => {
+    npcValue.value += npcSpeed.value
+  },500)
   gamePause.value = false;
   typing.value = '';
 }
@@ -73,13 +81,14 @@ const retry = (state) => {
   setTimeout(startCountdown, 1000);
 }
 
+
 const startCountdown = () => {
   const timer = setInterval(() => {
     count.value--;
     if(count.value === 0){
       clearInterval(timer);
       moveNpc = setInterval(() => {
-        npcValue.value += 0.005
+        npcValue.value += npcSpeed.value
       },500)
     }
   },1000);
@@ -121,7 +130,7 @@ watch([userValue, npcValue], () => {
       <q-linear-progress track-color="grey-2" color="positive" rounded size="20px" :value="userValue"></q-linear-progress>
     </div>
     <div draggable="false" class="disable-dblclick q-mt-lg">
-      <p class="text-bold text-h5 text-white disable-dblclick">{{ wordValue }}</p>
+      <p id="wordVal" class="text-bold text-h5 turn-white disable-dblclick">{{ wordValue }}</p>
     </div>
     <div>
       <template v-if="count === 3">
@@ -215,6 +224,12 @@ watch([userValue, npcValue], () => {
 
 .chk-contain
   border: 1px solid red
+
+.turn-red
+  color: red
+
+.turn-white
+  color: white
 
 .red
   background-color: red
