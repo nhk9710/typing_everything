@@ -37,7 +37,7 @@ const goHere = () => {
     </q-card>-->
     <q-card class="character bg-green-2 flex q-mr-sm justify-center column" @click="selectCharacter('green')">
       <q-card-section class="flex justify-center long">
-        <span class=" text-h4 text-bold">장문(오픈 준비중..)</span>
+        <span class=" text-h4 text-bold">장문</span>
       </q-card-section>
     </q-card>
     <q-card class="character bg-blue-2 flex justify-center column" @click="selectCharacter('blue')">
