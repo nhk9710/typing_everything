@@ -11,13 +11,16 @@ const storyLength = Story.story[0].content.length; //선택한 이야기의 문�
 const myType = () => {
   let text = document.getElementById('answer');
 
-  if(story.value.split('')[nowAlphabet.value] === document.getElementById('answer').innerHTML[nowAlphabet.value]){
+  if(text.innerHTML[nowAlphabet.value] === story.value.split('')[nowAlphabet.value]) {
     nowAlphabet.value += 1;
-    if(text.innerHTML === story.value){
+
+    if(text.innerText === story.value){
       nowText.value += 1;
       newSentence();
-      text.innerHTML = '';
+      text.innerText = '';
     }
+  } else {
+    nowAlphabet.value = text.innerText.length;
   }
 }
 
@@ -26,15 +29,22 @@ const newSentence = () => {
   nowAlphabet.value = 0;
 }
 const isIncorrect = (index) => {
-  return index === nowAlphabet.value;
+  if(story.value[index] === ' ') {
+    return false;
+  }
+
+  return index < nowAlphabet.value &&
+    story.value.split('')[index] !== answerText.value[index];
 }
 const isCorrect = (index) => {
-  return index <= nowAlphabet.value && index < nowAlphabet.value
+  return index < nowAlphabet.value &&
+    story.value.split('')[index] === answerText.value[index];
 }
 
 const isNotTyped = (index) => {
-  return index >= nowAlphabet.value + answerText.value.length;
-};
+  return index >= nowAlphabet.value &&
+    story.value.split('')[index] !== ' ';
+}
 
 onMounted(() => {
   const findAnswerElement = () => {
@@ -90,6 +100,8 @@ newSentence(); //시작시 새로운 문장 호출
 #sentence
   color: white
 
+.wordNotTyped
+  color: white
 .wordCorrect
   color: #69ff24
 .wordFalse
