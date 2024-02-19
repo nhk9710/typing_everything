@@ -40,25 +40,25 @@ const myType = () => {
   }
 }
 
-const newSentence = () => {
+const newSentence = () => { //새로운 문장 호출 함수
   story.value = Story.story[storyIndex.value].content[nowText.value];
   startTime.value = Date.now();
   nowAlphabet.value = 0;
   typedCharacters.value = 0;
 }
 
-const calculateWpm = () => {
+const calculateWpm = () => { //wpm 계산 함수
   const elapsedTime = (Date.now() - startTime.value) / 1000;
   if(elapsedTime === 0) return;
   viewWpm.value = (typedCharacters.value / elapsedTime) * 60;
 }
 
-const animation = () => {
+const animation = () => { // 계산 성능 처리 관련 함수
   requestAnimationFrame(animation);
   calculateWpm();
 }
 
-const isIncorrect = (index) => {
+const isIncorrect = (index) => { // 오타 일 때 처리 로직
   if(story.value[index] === ' ') {
     return false;
   }
@@ -66,12 +66,12 @@ const isIncorrect = (index) => {
   return index < nowAlphabet.value &&
     story.value.split('')[index] !== answerText.value[index];
 }
-const isCorrect = (index) => {
+const isCorrect = (index) => { //정답일때 처리 로직
   return index < nowAlphabet.value &&
     story.value.split('')[index] === answerText.value[index];
 }
 
-const isNotTyped = (index) => {
+const isNotTyped = (index) => { //입력이 안된 상태일때
   return index >= nowAlphabet.value &&
     story.value.split('')[index] !== ' ';
 }
@@ -91,7 +91,7 @@ onMounted(() => {
   findAnswerElement();
 });
 
-const selectStory = (index) => {
+const selectStory = (index) => { // 이야기 선택 함수
   storyIndex.value = index
   title.value = Story.story[storyIndex.value].title
   storyLength.value = Story.story[storyIndex.value].content.length
