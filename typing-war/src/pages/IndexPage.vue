@@ -35,12 +35,12 @@ const goHere = () => {
         RED
       </q-card-section>
     </q-card>-->
-    <q-card class="character bg-green-2 flex q-mr-sm justify-center column" @click="selectCharacter('green')">
+    <q-card :class="player.character === 'green' ? 'bg-green-5' : 'bg-green-2'"  class="character flex q-mr-sm justify-center column" @click="selectCharacter('green')">
       <q-card-section class="flex justify-center long">
         <span class=" text-h4 text-bold">장문</span>
       </q-card-section>
     </q-card>
-    <q-card class="character bg-blue-2 flex justify-center column" @click="selectCharacter('blue')">
+    <q-card :class="player.character === 'blue' ? 'bg-blue-5' : 'bg-blue-2'" class="character flex justify-center column" @click="selectCharacter('blue')">
       <q-card-section class="flex justify-center">
         <span class="short text-h4 text-bold">단어</span>
       </q-card-section>
@@ -75,6 +75,7 @@ const goHere = () => {
 .character
   width: 10vw
   height: 10vw
+  transition: 0.5s
 
 .character:hover
   cursor: pointer

@@ -8,6 +8,11 @@ let title = Story.story[0].title; // 선택한 장문 제목
 let story = ref('') // 선택한 장문 문장
 const answerText = ref('');
 const storyLength = Story.story[0].content.length; //선택한 이야기의 문장 총 길이
+
+let startTime = ref(0); // 타이핑 시작 시간을 저장하는 변수
+let lastTypedTime = ref(0); // 마지막 타이핑 발생 시간을 저장하는 변수
+let typedCharacters = ref(0); // 현재 문장에서 사용자가 타이핑한 총 문자수를 저장하는 변수
+let viewWpm = ref(0); // 화면에 보여지는 wpm 값
 const myType = () => {
   let text = document.getElementById('answer');
 
@@ -19,6 +24,13 @@ const myType = () => {
       newSentence();
       text.innerText = '';
     }
+
+    lastTypedTime.value = Date.now();
+    if(nowAlphabet.value === 1){
+      startTime.value = lastTypedTime.value;
+    }
+    typedCharacters.value += 1;
+    animation();
   } else {
     nowAlphabet.value = text.innerText.length;
   }
@@ -26,8 +38,22 @@ const myType = () => {
 
 const newSentence = () => {
   story.value = Story.story[0].content[nowText.value];
+  startTime.value = Date.now();
   nowAlphabet.value = 0;
+  typedCharacters.value = 0;
 }
+
+const calculateWpm = () => {
+  const elapsedTime = (Date.now() - startTime.value) / 1000;
+  if(elapsedTime === 0) return;
+  viewWpm.value = (typedCharacters.value / elapsedTime) * 60;
+}
+
+const animation = () => {
+  requestAnimationFrame(animation);
+  calculateWpm();
+}
+
 const isIncorrect = (index) => {
   if(story.value[index] === ' ') {
     return false;
@@ -69,7 +95,7 @@ newSentence(); //시작시 새로운 문장 호출
     <q-page class="story-container flex column flex-center">
       <div class="flex justify-between" style="width: 50%">
         <span class="text-white text-bold q-mb-lg">진행도 : {{ nowText + 1 }} / {{ storyLength }}</span>
-        <span class="text-bold text-white">타수 : {{ nowAlphabet + 1 }} / {{ storyLength }}</span>
+        <span class="text-bold text-white">타수 : {{ Math.floor(viewWpm) }}</span>
       </div>
       <div style="width: 50%" class="flex column flex-center">
         <div>
