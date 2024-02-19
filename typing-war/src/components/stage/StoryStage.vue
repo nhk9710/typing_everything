@@ -4,10 +4,14 @@ import {ref, watch, onMounted} from 'vue';
 
 let nowText = ref(0); //현재 문장 번호
 let nowAlphabet = ref(0); // 현재 입력한 단어 번호
-let title = Story.story[0].title; // 선택한 장문 제목
+let title = ref('이야기를 선택해 주세요'); // 선택한 장문 제목
 let story = ref('') // 선택한 장문 문장
 const answerText = ref('');
-const storyLength = Story.story[0].content.length; //선택한 이야기의 문장 총 길이
+const storyLength = ref(0); //선택한 이야기의 문장 총 길이
+
+let isStory = ref(true); // 선택한 이야기 유무
+let storyIndex = ref(0); //선택한 이야기 index
+
 
 let startTime = ref(0); // 타이핑 시작 시간을 저장하는 변수
 let lastTypedTime = ref(0); // 마지막 타이핑 발생 시간을 저장하는 변수
@@ -37,7 +41,7 @@ const myType = () => {
 }
 
 const newSentence = () => {
-  story.value = Story.story[0].content[nowText.value];
+  story.value = Story.story[storyIndex.value].content[nowText.value];
   startTime.value = Date.now();
   nowAlphabet.value = 0;
   typedCharacters.value = 0;
@@ -87,7 +91,13 @@ onMounted(() => {
   findAnswerElement();
 });
 
-newSentence(); //시작시 새로운 문장 호출
+const selectStory = (index) => {
+  storyIndex.value = index
+  title.value = Story.story[storyIndex.value].title
+  storyLength.value = Story.story[storyIndex.value].content.length
+  isStory.value = false;
+  newSentence();
+}
 </script>
 
 <template>
@@ -112,12 +122,34 @@ newSentence(); //시작시 새로운 문장 호출
           style="width: 100%; height: 10vh; border: 1px solid white; border-radius: 5px">
         </div>
       </div>
+
+      <q-dialog v-model="isStory">
+        <q-card>
+          <q-card-section>
+            <div class="text-h6">이야기를 선택해 주세요.</div>
+          </q-card-section>
+
+          <q-card-section>
+            <q-item
+              v-for="(item, index) in Story.story"
+              :key="index"
+              clickable
+              style="border-radius: 10px"
+            >
+              <q-item-section @click="selectStory(index)">
+                <p class="text-bold">{{ item.title }}</p>
+              </q-item-section>
+            </q-item>
+          </q-card-section>
+        </q-card>
+      </q-dialog>
     </q-page>
   </div>
 </template>
 
 
 <style scoped lang="sass">
+
 .story-container
   width: 100%
   height: 100vh
