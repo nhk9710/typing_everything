@@ -19,29 +19,50 @@ let typedCharacters = ref(0); // 현재 문장에서 사용자가 타이핑한 �
 let viewWpm = ref(0); // 화면에 보여지는 wpm 값
 const myType = () => {
   let text = document.getElementById('answer');
+  let currentAlphabet = nowAlphabet.value;
 
-  if(text.innerHTML[nowAlphabet.value] === story.value.split('')[nowAlphabet.value]) {
-    nowAlphabet.value += 1;
+  if(text.innerText[currentAlphabet] !== story.value[currentAlphabet]){
+    nowAlphabet.value = text.innerText.length;
+  }else{
+    nowAlphabet.value = currentAlphabet + 1;
 
-    if(text.innerText === story.value){
+    if (text.innerText === story.value) {
       nowText.value += 1;
       newSentence();
-      text.innerText = '';
     }
 
     lastTypedTime.value = Date.now();
-    if(nowAlphabet.value === 1){
+    if (currentAlphabet === 1) {
+      startTime.value = lastTypedTime.value;
+    }
+    typedCharacters.value += 1;
+    animation();
+  }
+
+  /*if (text.innerText[currentAlphabet] === story.value[currentAlphabet]) {
+    nowAlphabet.value = currentAlphabet + 1;
+
+    if (text.innerText === story.value) {
+      nowText.value += 1;
+      newSentence();
+    }
+
+    lastTypedTime.value = Date.now();
+    if (currentAlphabet === 1) {
       startTime.value = lastTypedTime.value;
     }
     typedCharacters.value += 1;
     animation();
   } else {
     nowAlphabet.value = text.innerText.length;
-  }
+  }*/
 }
 
 const newSentence = () => { //새로운 문장 호출 함수
-  story.value = Story.story[storyIndex.value].content[nowText.value];
+  let text = document.getElementById('answer')
+  const { content } = Story.story[storyIndex.value];
+  text.innerText = '';
+  story.value = content[nowText.value];
   startTime.value = Date.now();
   nowAlphabet.value = 0;
   typedCharacters.value = 0;
@@ -49,8 +70,9 @@ const newSentence = () => { //새로운 문장 호출 함수
 
 const calculateWpm = () => { //wpm 계산 함수
   const elapsedTime = (Date.now() - startTime.value) / 1000;
-  if(elapsedTime === 0) return;
-  viewWpm.value = (typedCharacters.value / elapsedTime) * 60;
+  if(elapsedTime !== 0) {
+    viewWpm.value = (typedCharacters.value / elapsedTime) * 60;
+  }
 }
 
 const animation = () => { // 계산 성능 처리 관련 함수
@@ -62,7 +84,6 @@ const isIncorrect = (index) => { // 오타 일 때 처리 로직
   if(story.value[index] === ' ') {
     return false;
   }
-
   return index < nowAlphabet.value &&
     story.value.split('')[index] !== answerText.value[index];
 }
@@ -84,17 +105,18 @@ onMounted(() => {
         answerText.value = answerElement.innerText;
       });
     } else {
-      setTimeout(findAnswerElement, 100);
+      requestAnimationFrame(findAnswerElement);
     }
   };
 
   findAnswerElement();
 });
 
-const selectStory = (index) => { // 이야기 선택 함수
-  storyIndex.value = index
-  title.value = Story.story[storyIndex.value].title
-  storyLength.value = Story.story[storyIndex.value].content.length
+const selectStory = (index) => { // Select story function
+  const selectedStory = Story.story[index];
+  storyIndex.value = index;
+  title.value = selectedStory.title;
+  storyLength.value = selectedStory.content.length;
   isStory.value = false;
   newSentence();
 }
@@ -105,21 +127,22 @@ const selectStory = (index) => { // 이야기 선택 함수
     <q-page class="story-container flex column flex-center">
       <div class="flex justify-between" style="width: 50%">
         <span class="text-white text-bold q-mb-lg">진행도 : {{ nowText + 1 }} / {{ storyLength }}</span>
-        <span class="text-bold text-white">타수 : {{ Math.floor(viewWpm) }}</span>
+        <span class="text-bold text-white">타수 : {{ Math.round(viewWpm) }}</span>
       </div>
       <div style="width: 50%" class="flex column flex-center">
         <div>
-          <span class="text-h4 text-white text-bold q-mb-lg">제목 : {{ title }}</span>
+          <span class="text-h5 text-white text-bold q-mb-lg">제목 : {{ title }}</span>
         </div>
-      <p id="sentence" class="text-h5 q-mt-lg">
+      <p id="sentence" class="text-h5 text-weight-bolder q-mt-lg">
         <span v-for="(char, index) in story" :key="index" :class="{ 'wordFalse': isIncorrect(index), 'wordCorrect': isCorrect(index), 'wordNotTyped': isNotTyped(index) }">{{char}}</span>
       </p>
         <div
           id="answer"
           contenteditable="true"
-          class="text-white text-h6 text-bold q-mt-lg"
+          class="text-h6 text-bold q-mt-lg"
           @input="myType"
-          style="width: 100%; height: 10vh; border: 1px solid white; border-radius: 5px">
+          @keydown.enter="(e) => e.preventDefault()"
+          style="width: 100%; height: 10vh; border: 1px solid white; background-color: #F4F4F4; border-radius: 5px">
         </div>
       </div>
 
@@ -153,15 +176,22 @@ const selectStory = (index) => { // 이야기 선택 함수
 .story-container
   width: 100%
   height: 100vh
-  background-color: #1f2040
+  background-color: #2d2c2f
+
 
 #sentence
   color: white
+  transition: 0.5s
+
+#answer:focus
+    outline: none
 
 .wordNotTyped
   color: white
 .wordCorrect
   color: #69ff24
+  transition: 0.5s
 .wordFalse
   color: red
+  transition: 0.5s
 </style>
