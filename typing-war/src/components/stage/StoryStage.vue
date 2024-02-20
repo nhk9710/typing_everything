@@ -140,9 +140,9 @@ const selectStory = (index) => { // Select story function
         <span class="text-white text-bold text-h6 q-mt-lg">콤보 : {{ combo }}</span>
       </div>
 
-      <q-dialog v-model="isStory">
+      <q-dialog persistent v-model="isStory">
         <q-card>
-          <q-card-section>
+          <q-card-section class="bg-grey-9 text-white">
             <div class="text-h6">이야기를 선택해 주세요.</div>
           </q-card-section>
 
