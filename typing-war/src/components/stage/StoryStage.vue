@@ -44,7 +44,8 @@ const myType = () => {
 }
 
 const countBackSpace = (e) => {
-  if(e.keyCode === 8){
+  console.log(e.code)
+  if(e.code === 'Backspace'){
     combo.value = 0;
   }
 }
