@@ -12,6 +12,7 @@ const storyLength = ref(0); //선택한 이야기의 문장 총 길이
 let isStory = ref(true); // 선택한 이야기 유무
 let storyIndex = ref(0); //선택한 이야기 index
 
+let combo = ref(0); // 연속적으로 정확히 입력하면 증가
 
 let startTime = ref(0); // 타이핑 시작 시간을 저장하는 변수
 let lastTypedTime = ref(0); // 마지막 타이핑 발생 시간을 저장하는 변수
@@ -20,15 +21,14 @@ let viewWpm = ref(0); // 화면에 보여지는 wpm 값
 const myType = () => {
   let text = document.getElementById('answer');
 
-
   if(text.innerText[nowAlphabet.value] !== story.value[nowAlphabet.value]){
     if(nowText.value !== 0 && nowAlphabet.value === 0){
       text.innerHTML = '';
     }
-    nowAlphabet.value = text.innerText.length;
+    // nowAlphabet.value = text.innerText.length;
   }else{
-    nowAlphabet.value = nowAlphabet.value + 1;
-
+    combo.value += 1;
+    nowAlphabet.value += 1;
     if (text.innerText === story.value) {
       nowText.value += 1;
       newSentence();
@@ -40,6 +40,12 @@ const myType = () => {
     }
     typedCharacters.value += 1;
     animation();
+  }
+}
+
+const countBackSpace = (e) => {
+  if(e.keyCode === 8){
+    combo.value = 0;
   }
 }
 
@@ -105,12 +111,6 @@ const selectStory = (index) => { // Select story function
   isStory.value = false;
   newSentence();
 }
-
-watch(nowText, () => {
-  let text = document.getElementById('answer');
-  text.innerHTML = '';
-  answerText.value = '';
-})
 </script>
 
 <template>
@@ -133,8 +133,10 @@ watch(nowText, () => {
           class="text-h6 text-bold q-mt-lg"
           @input="myType"
           @keydown.enter="(e) => e.preventDefault()"
+          @keydown="countBackSpace($event)"
           style="width: 100%; height: 10vh; border: 1px solid white; background-color: #F4F4F4; border-radius: 5px">
         </div>
+        <span class="text-white text-bold text-h6 q-mt-lg">콤보 : {{ combo }}</span>
       </div>
 
       <q-dialog v-model="isStory">
