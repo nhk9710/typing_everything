@@ -19,12 +19,15 @@ let typedCharacters = ref(0); // 현재 문장에서 사용자가 타이핑한 �
 let viewWpm = ref(0); // 화면에 보여지는 wpm 값
 const myType = () => {
   let text = document.getElementById('answer');
-  let currentAlphabet = nowAlphabet.value;
 
-  if(text.innerText[currentAlphabet] !== story.value[currentAlphabet]){
+
+  if(text.innerText[nowAlphabet.value] !== story.value[nowAlphabet.value]){
+    if(nowText.value !== 0 && nowAlphabet.value === 0){
+      text.innerHTML = '';
+    }
     nowAlphabet.value = text.innerText.length;
   }else{
-    nowAlphabet.value = currentAlphabet + 1;
+    nowAlphabet.value = nowAlphabet.value + 1;
 
     if (text.innerText === story.value) {
       nowText.value += 1;
@@ -32,36 +35,18 @@ const myType = () => {
     }
 
     lastTypedTime.value = Date.now();
-    if (currentAlphabet === 1) {
+    if (nowAlphabet.value === 1) {
       startTime.value = lastTypedTime.value;
     }
     typedCharacters.value += 1;
     animation();
   }
-
-  /*if (text.innerText[currentAlphabet] === story.value[currentAlphabet]) {
-    nowAlphabet.value = currentAlphabet + 1;
-
-    if (text.innerText === story.value) {
-      nowText.value += 1;
-      newSentence();
-    }
-
-    lastTypedTime.value = Date.now();
-    if (currentAlphabet === 1) {
-      startTime.value = lastTypedTime.value;
-    }
-    typedCharacters.value += 1;
-    animation();
-  } else {
-    nowAlphabet.value = text.innerText.length;
-  }*/
 }
 
 const newSentence = () => { //새로운 문장 호출 함수
   let text = document.getElementById('answer')
   const { content } = Story.story[storyIndex.value];
-  text.innerText = '';
+  text.innerHTML = '';
   story.value = content[nowText.value];
   startTime.value = Date.now();
   nowAlphabet.value = 0;
@@ -120,6 +105,12 @@ const selectStory = (index) => { // Select story function
   isStory.value = false;
   newSentence();
 }
+
+watch(nowText, () => {
+  let text = document.getElementById('answer');
+  text.innerHTML = '';
+  answerText.value = '';
+})
 </script>
 
 <template>
