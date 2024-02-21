@@ -146,15 +146,15 @@ const selectStory = (index) => { // Select story function
             <div class="text-h6">이야기를 선택해 주세요.</div>
           </q-card-section>
 
-          <q-card-section>
+          <q-card-section class="flex column text-center">
             <q-item
               v-for="(item, index) in Story.story"
               :key="index"
               clickable
-              style="border-radius: 10px"
+              style="border-radius: 10px; display: flex;"
             >
               <q-item-section @click="selectStory(index)">
-                <p class="text-bold">{{ item.title }}</p>
+                <span class="text-bold">{{ item.title }}</span>
               </q-item-section>
             </q-item>
           </q-card-section>
